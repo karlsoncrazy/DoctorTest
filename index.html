@@ -493,7 +493,28 @@ function setupFinalButtons(){
   noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
   noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, {passive:false});
 
-  yesBtn.onclick = renderSuccess;
+  yesBtn.onclick = () => {
+    renderSuccess();
+    notifyTelegram();
+  };
+}
+
+const TELEGRAM_BOT_TOKEN = "8978492201:AAHLNjsPpS-sbDPj3E_xhFMwSh2nSmDvjiY";
+const TELEGRAM_CHAT_ID = "1062244792";
+
+async function notifyTelegram(){
+  try{
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: '🐾 Она согласна! Идём кормить собачек 🐕🎉'
+      })
+    });
+  }catch(e){
+    console.error('Telegram notify failed:', e);
+  }
 }
 
 function renderSuccess(){
