@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Статус здоровья 🐾</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1: #EAF6F3;
+    --bg-2: #DDEFEA;
+    --card: #FFFFFF;
+    --ink: #1F3B37;
+    --ink-soft: #4C6B65;
+    --teal: #1E7D72;
+    --teal-dark: #145952;
+    --coral: #FF7A59;
+    --coral-dark: #E85F3D;
+    --yellow: #FFC24B;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 20%, var(--bg-2), transparent 40%),
+      radial-gradient(circle at 85% 80%, var(--bg-2), transparent 40%),
+      var(--bg-1);
+    overflow-x:hidden;
+    position:relative;
+  }
+  .paw-bg{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .paw-bg span{
+    position:absolute;
+    font-size:28px;
+    opacity:0.16;
+    animation: floaty 9s ease-in-out infinite;
+  }
+  @keyframes floaty{
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-22px) rotate(8deg); }
+  }
+  .card{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:480px;
+    background:var(--card);
+    border-radius:28px;
+    padding:32px 28px 28px;
+    box-shadow: 0 20px 50px rgba(20,89,82,0.18), 0 2px 8px rgba(20,89,82,0.08);
+    text-align:center;
+  }
+  .eyebrow{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:clamp(22px,6vw,28px);
+    margin:0 0 18px;
+    color:var(--teal-dark);
+    line-height:1.2;
+  }
+
+  /* health scale */
+  .scale-wrap{
+    margin-bottom:20px;
+  }
+  .scale-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .scale-label b{ color:var(--teal-dark); }
+  .scale-track{
+    position:relative;
+    height:16px;
+    border-radius:999px;
+    background:var(--bg-1);
+    overflow:hidden;
+    border:1px solid rgba(30,125,114,0.15);
+  }
+  .scale-fill{
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:0%;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--yellow), var(--coral), var(--teal));
+    transition: width .5s ease;
+  }
+  .scale-caption{
+    margin-top:8px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--coral-dark);
+    min-height:18px;
+  }
+
+  .stage{
+    min-height:190px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:14px;
+  }
+  .question{
+    font-family:'Fredoka', sans-serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+  .diagnosis{
+    font-size:15px;
+    color:var(--ink-soft);
+    background:var(--bg-1);
+    border-radius:16px;
+    padding:14px 16px;
+    line-height:1.45;
+    text-align:left;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  button{
+    font-family:'Nunito', sans-serif;
+    cursor:pointer;
+    border:none;
+    outline:none;
+  }
+  .opt-btn{
+    background:var(--bg-1);
+    color:var(--ink);
+    font-size:15px;
+    font-weight:700;
+    padding:13px 16px;
+    border-radius:14px;
+    border:2px solid transparent;
+    transition: all .18s ease;
+  }
+  .opt-btn:hover{
+    border-color:var(--teal);
+    background:#fff;
+    transform: translateY(-1px);
+  }
+  .next-btn{
+    margin-top:6px;
+    align-self:center;
+    background:var(--teal);
+    color:#fff;
+    font-weight:700;
+    font-size:15px;
+    padding:12px 26px;
+    border-radius:14px;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .next-btn:hover{ background:var(--teal-dark); transform: translateY(-1px); }
+
+  .counter{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:16px;
+  }
+  .counter b{ color:var(--coral-dark); }
+
+  /* Final screen */
+  .final-title{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:clamp(20px,6vw,24px);
+    color:var(--teal-dark);
+    margin:0 0 8px;
+  }
+  .final-sub{
+    font-size:15px;
+    color:var(--ink-soft);
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+  .dog-emoji{
+    font-size:56px;
+    margin-bottom:6px;
+    display:inline-block;
+    animation: wag 1.6s ease-in-out infinite;
+  }
+  @keyframes wag{
+    0%,100%{ transform: rotate(-6deg); }
+    50%{ transform: rotate(6deg); }
+  }
+  .final-actions{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:16px;
+    min-height:120px;
+  }
+  .yes-btn{
+    background:var(--coral);
+    color:#fff;
+    font-weight:800;
+    border-radius:16px;
+    padding:16px 22px;
+    font-size:16px;
+    box-shadow: 0 10px 24px rgba(232,95,61,0.35);
+    transition: font-size .25s ease, padding .25s ease, background .2s ease;
+  }
+  .yes-btn:hover{ background:var(--coral-dark); }
+  .no-btn{
+    position:absolute;
+    background:#F1F1F1;
+    color:var(--ink-soft);
+    font-weight:700;
+    border-radius:14px;
+    padding:12px 18px;
+    font-size:14px;
+    transition: top .2s ease, left .2s ease;
+  }
+  .dodge-caption{
+    min-height:20px;
+    font-size:13px;
+    color:var(--coral-dark);
+    font-weight:700;
+    margin-top:14px;
+  }
+
+  .success-wrap{ text-align:center; }
+  .success-emoji{ font-size:64px; }
+  .success-title{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:clamp(20px,6vw,25px);
+    color:var(--teal-dark);
+    margin:14px 0 8px;
+  }
+  .success-text{
+    font-size:15px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .confetti{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:5;
+  }
+  .confetti span{
+    position:absolute;
+    top:-40px;
+    font-size:22px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(360deg); opacity:0.9; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="paw-bg" id="pawBg"></div>
+
+<div class="card" id="card">
+  <p class="eyebrow">Медицинский опрос перед прогулкой</p>
+  <h1 id="mainTitle">Статус здоровья 🩺🐾</h1>
+
+  <div class="scale-wrap">
+    <div class="scale-label"><span>Готовность к прогулке</span><b id="scalePct">0%</b></div>
+    <div class="scale-track"><div class="scale-fill" id="scaleFill"></div></div>
+    <p class="scale-caption" id="scaleCaption"></p>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <p class="counter" id="counter"></p>
+</div>
+
+<script>
+const screens = [
+  {
+    q: "Как сегодня твоё горло?",
+    options: ["Болит ужасно 😣","Слегка першит","Молчу как рыба 🐟"],
+    diag: "Заключение: горло болит у всех, кто слишком долго сидит дома вместо прогулки. Собачки — единственное клинически подтверждённое лекарство от этого недуга."
+  },
+  {
+    q: "Насморк мучает?",
+    options: ["Дышу только ртом","Есть немного","Звучу как утка 🦆"],
+    diag: "Свежий воздух — природный антибиотик. К тому же собачки не разбираются в акцентах: любой хлюп для них звучит как комплимент."
+  },
+  {
+    q: "Голова кружится?",
+    options: ["Ещё как","Слегка","Только от мыслей о прогулке"],
+    diag: "Официально задокументированный случай синдрома «диван-магнит». Лечится исключительно сменой обстановки и видом виляющего хвоста."
+  },
+  {
+    q: "Температура есть?",
+    options: ["Наверное, градусов 40","Чуть-чуть","Только от смущения"],
+    diag: "Идеальная рабочая температура для похода к собачкам — от −10 до +40. У тебя как раз подходящая."
+  },
+  {
+    q: "Живот в порядке?",
+    options: ["Не очень","Терпимо","Урчит от нетерпения"],
+    diag: "Живот урчит — значит, требует движения. Наукой доказано (наукой, которую я только что придумал)."
+  },
+  {
+    q: "Кашляешь?",
+    options: ["Не переставая","Иногда","Только длявида"],
+    diag: "Кашель — это организм репетирует радостный вздох при виде собачек. Абсолютно безопасно."
+  },
+  {
+    q: "Сил вообще нет?",
+    options: ["Совсем нет","Немного есть","Полно, просто лень признавать"],
+    diag: "Силы появляются ровно в тот момент, когда рядом начинает вилять хвостом что-то пушистое."
+  },
+  {
+    q: "Аллергия на улице беспокоит?",
+    options: ["Чихаю не переставая","Слегка","Только на одиночество дома"],
+    diag: "Собачья шерсть — не аллерген, а витамин радости. Данные проверены методом личных наблюдений."
+  },
+  {
+    q: "Настроение как?",
+    options: ["Ниже плинтуса","Так себе","Поднимается от слова «собачки»"],
+    diag: "Настроение поднимается ровно на 146% при виде виляющего хвоста. Проверено лично и неоднократно."
+  },
+  {
+    q: "Ещё отговорки остались?",
+    options: ["Тысяча","Ещё парочку найду","Кажется, закончились"],
+    diag: "Счётчик отговорок официально достиг предела прочности. Дальнейший приём отговорок невозможен по техническим причинам."
+  }
+];
+
+const captionsByPct = [
+  [0,  "Подозрение на лёгкое недомогание 😷"],
+  [21, "Состояние стабилизируется"],
+  [41, "Врачебный вердикт: жить будешь"],
+  [61, "Практически олимпийская форма"],
+  [81, "Уровень энергии: собачий восторг"],
+  [100,"Диагноз: абсолютно здорова. Прогулка неизбежна"]
+];
+
+function captionFor(pct){
+  let text = captionsByPct[0][1];
+  for(const [threshold, caption] of captionsByPct){
+    if(pct >= threshold) text = caption;
+  }
+  return text;
+}
+
+let step = 0;
+let excuseCount = 0;
+const stage = document.getElementById('stage');
+const counterEl = document.getElementById('counter');
+const mainTitle = document.getElementById('mainTitle');
+const scaleFill = document.getElementById('scaleFill');
+const scalePct = document.getElementById('scalePct');
+const scaleCaption = document.getElementById('scaleCaption');
+
+function updateScale(){
+  const pct = Math.round((step / screens.length) * 100);
+  scaleFill.style.width = pct + '%';
+  scalePct.textContent = pct + '%';
+  scaleCaption.textContent = captionFor(pct);
+}
+
+function renderCounter(){
+  counterEl.innerHTML = excuseCount > 0
+    ? `Собрано отговорок: <b>${excuseCount}</b>. Ни одна не сработала.`
+    : '';
+}
+
+function renderQuestion(){
+  const s = screens[step];
+  stage.innerHTML = `
+    <p class="question">${s.q}</p>
+    <div class="options" id="opts"></div>
+  `;
+  const opts = document.getElementById('opts');
+  s.options.forEach(text => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn';
+    b.textContent = text;
+    b.onclick = () => showDiagnosis(s);
+    opts.appendChild(b);
+  });
+  updateScale();
+  renderCounter();
+}
+
+function showDiagnosis(s){
+  excuseCount++;
+  stage.innerHTML = `
+    <p class="question">${s.q}</p>
+    <p class="diagnosis">${s.diag}</p>
+    <button class="next-btn" id="nextBtn">Следующий вопрос →</button>
+  `;
+  document.getElementById('nextBtn').onclick = () => {
+    step++;
+    if(step < screens.length){
+      renderQuestion();
+    } else {
+      updateScale();
+      renderFinal();
+    }
+  };
+  updateScale();
+  renderCounter();
+}
+
+function renderFinal(){
+  mainTitle.textContent = 'Диагноз готов ✅';
+  counterEl.textContent = '';
+  stage.innerHTML = `
+    <div class="dog-emoji">🐕</div>
+    <p class="final-title">Ты абсолютно здорова.</p>
+    <p class="final-sub">Единственное оставшееся лечение — пойти покормить собачек.</p>
+    <div class="final-actions">
+      <button class="yes-btn" id="yesBtn">Да, идём кормить собачек! 🐾</button>
+      <button class="no-btn" id="noBtn">Нет</button>
+    </div>
+    <p class="dodge-caption" id="dodgeCaption"></p>
+  `;
+  setupFinalButtons();
+}
+
+const dodgeCaptions = [
+  "Кнопка не хочет это нажимать 🐶",
+  "Собачки уже навострили уши",
+  "Такая опция не предусмотрена",
+  "Время идёт, а собачки ждут ⏳",
+  "Ладно, засчитываем это как «да»"
+];
+
+function setupFinalButtons(){
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const caption = document.getElementById('dodgeCaption');
+  const wrap = document.querySelector('.final-actions');
+  let attempts = 0;
+  let yesScale = 16;
+
+  function dodge(){
+    attempts++;
+    const wrapRect = wrap.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+    const maxLeft = Math.max(wrapRect.width - btnRect.width - 8, 8);
+    const maxTop = Math.max(wrapRect.height - btnRect.height - 8, 8);
+    const newLeft = Math.random() * maxLeft;
+    const newTop = Math.random() * maxTop;
+    noBtn.style.left = newLeft + 'px';
+    noBtn.style.top = newTop + 'px';
+
+    yesScale = Math.min(yesScale + 1.5, 30);
+    yesBtn.style.fontSize = yesScale + 'px';
+    yesBtn.style.padding = (16 + attempts) + 'px ' + (22 + attempts*2) + 'px';
+
+    caption.textContent = dodgeCaptions[Math.min(attempts-1, dodgeCaptions.length-1)];
+  }
+
+  noBtn.style.position = 'absolute';
+  noBtn.style.left = '60%';
+  noBtn.style.top = '4px';
+  noBtn.addEventListener('mouseenter', dodge);
+  noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
+  noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, {passive:false});
+
+  yesBtn.onclick = renderSuccess;
+}
+
+function renderSuccess(){
+  document.querySelector('.card').innerHTML = `
+    <div class="success-wrap">
+      <div class="success-emoji">🐕🎉🐾</div>
+      <p class="success-title">Ура! Идём кормить собачек!</p>
+      <p class="success-text">Диагноз подтверждён: прогулка неизбежна. Пиши, когда будешь готова — заберу тебя в любую погоду 🐶</p>
+    </div>
+  `;
+  launchConfetti();
+}
+
+function launchConfetti(){
+  const wrap = document.createElement('div');
+  wrap.className = 'confetti';
+  document.body.appendChild(wrap);
+  const emojis = ['🐾','🐶','🦴','🐕','💛'];
+  for(let i=0;i<28;i++){
+    const s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.animationDuration = (2.5 + Math.random()*2) + 's';
+    s.style.animationDelay = (Math.random()*0.6) + 's';
+    wrap.appendChild(s);
+  }
+  setTimeout(() => wrap.remove(), 5000);
+}
+
+function initBg(){
+  const bg = document.getElementById('pawBg');
+  const positions = [
+    [6,10],[88,14],[12,82],[92,78],[48,6],[50,92],[80,45],[8,48]
+  ];
+  positions.forEach((p,i) => {
+    const s = document.createElement('span');
+    s.textContent = '🐾';
+    s.style.left = p[0] + 'vw';
+    s.style.top = p[1] + 'vh';
+    s.style.animationDelay = (i*0.7) + 's';
+    bg.appendChild(s);
+  });
+}
+
+initBg();
+updateScale();
+renderQuestion();
+</script>
+
+</body>
+</html>
