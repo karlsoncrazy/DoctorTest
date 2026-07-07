@@ -8,14 +8,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Статус здоровья, Ольчик 🩺🐾">
 <meta property="og:description" content="Ольчик, пройди медицинский опрос и узнай единственное лекарство, которое точно поможет.">
-<meta property="og:image" content="https://karlsoncrazy.github.io/DoctorTest/">
+<meta property="og:image" content="https://karlsoncrazy.github.io/DoctorTest/images.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Статус здоровья, Ольчик 🩺🐾">
 <meta name="twitter:description" content="Ольчик, пройди медицинский опрос и узнай единственное лекарство, которое точно поможет.">
-<meta name="twitter:image" content="https://karlsoncrazy.github.io/DoctorTest/">
+<meta name="twitter:image" content="https://karlsoncrazy.github.io/DoctorTest/images.png">
 
 <meta name="theme-color" content="#1E7D72">
 
@@ -296,6 +296,24 @@
     to{ transform: translateY(110vh) rotate(360deg); opacity:0.9; }
   }
 
+  .music-toggle{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:10;
+    background:rgba(255,255,255,0.9);
+    border-radius:999px;
+    width:44px;
+    height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    box-shadow: 0 6px 16px rgba(20,89,82,0.2);
+    cursor:pointer;
+    border:none;
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
   }
@@ -304,6 +322,9 @@
 <body>
 
 <div class="paw-bg" id="pawBg"></div>
+
+<audio id="bgMusic" src="harizma.mp3" loop preload="auto"></audio>
+<button class="music-toggle" id="musicToggle" title="Вкл/выкл музыку">🔊</button>
 
 <div class="card" id="card">
   <p class="eyebrow">Медицинский опрос для Ольчик перед прогулкой</p>
@@ -574,6 +595,41 @@ function initBg(){
   });
 }
 
+/* Background music: try to autoplay, fall back to first-interaction if blocked */
+const bgMusic = document.getElementById('bgMusic');
+const musicToggle = document.getElementById('musicToggle');
+bgMusic.volume = 0.6;
+let musicOn = true;
+
+function tryPlayMusic(){
+  const playPromise = bgMusic.play();
+  if(playPromise !== undefined){
+    playPromise.catch(() => {
+      const startOnInteraction = () => {
+        bgMusic.play().catch(()=>{});
+        document.removeEventListener('click', startOnInteraction);
+        document.removeEventListener('touchstart', startOnInteraction);
+        document.removeEventListener('keydown', startOnInteraction);
+      };
+      document.addEventListener('click', startOnInteraction, {once:true});
+      document.addEventListener('touchstart', startOnInteraction, {once:true});
+      document.addEventListener('keydown', startOnInteraction, {once:true});
+    });
+  }
+}
+
+musicToggle.onclick = () => {
+  musicOn = !musicOn;
+  if(musicOn){
+    bgMusic.play().catch(()=>{});
+    musicToggle.textContent = '🔊';
+  } else {
+    bgMusic.pause();
+    musicToggle.textContent = '🔇';
+  }
+};
+
+tryPlayMusic();
 initBg();
 updateScale();
 renderQuestion();
