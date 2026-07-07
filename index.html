@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Статус здоровья 🐾</title>
+<title>Статус здоровья, Ольчик 🐾</title>
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Статус здоровья, Ольчик 🩺🐾">
+<meta property="og:description" content="Ольчик, пройди медицинский опрос и узнай единственное лекарство, которое точно поможет.">
+<meta property="og:image" content="cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Статус здоровья, Ольчик 🩺🐾">
+<meta name="twitter:description" content="Ольчик, пройди медицинский опрос и узнай единственное лекарство, которое точно поможет.">
+<meta name="twitter:image" content="cover.png">
+
+<meta name="theme-color" content="#1E7D72">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -291,8 +306,8 @@
 <div class="paw-bg" id="pawBg"></div>
 
 <div class="card" id="card">
-  <p class="eyebrow">Медицинский опрос перед прогулкой</p>
-  <h1 id="mainTitle">Статус здоровья 🩺🐾</h1>
+  <p class="eyebrow">Медицинский опрос для Ольчик перед прогулкой</p>
+  <h1 id="mainTitle">Статус здоровья, Ольчик 🩺🐾</h1>
 
   <div class="scale-wrap">
     <div class="scale-label"><span>Готовность к прогулке</span><b id="scalePct">0%</b></div>
@@ -441,7 +456,7 @@ function renderFinal(){
   counterEl.textContent = '';
   stage.innerHTML = `
     <div class="dog-emoji">🐕</div>
-    <p class="final-title">Ты абсолютно здорова.</p>
+    <p class="final-title">Ольчик, ты абсолютно здорова.</p>
     <p class="final-sub">Единственное оставшееся лечение — пойти покормить собачек.</p>
     <div class="final-actions">
       <button class="yes-btn" id="yesBtn">Да, идём кормить собачек! 🐾</button>
@@ -509,7 +524,7 @@ async function notifyTelegram(){
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
-        text: '🐾 Она согласна! Идём кормить собачек 🐕🎉'
+        text: '🐾 Ольчик согласна! Идём кормить собачек 🐕🎉'
       })
     });
   }catch(e){
@@ -521,7 +536,7 @@ function renderSuccess(){
   document.querySelector('.card').innerHTML = `
     <div class="success-wrap">
       <div class="success-emoji">🐕🎉🐾</div>
-      <p class="success-title">Ура! Идём кормить собачек!</p>
+      <p class="success-title">Ольчик, ура! Идём кормить собачек!</p>
       <p class="success-text">Диагноз подтверждён: прогулка неизбежна. Пиши, когда будешь готова — заберу тебя в любую погоду 🐶</p>
     </div>
   `;
